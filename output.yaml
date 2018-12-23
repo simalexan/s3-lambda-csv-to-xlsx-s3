@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: A serverless component for CSV to XLSX conversion
+Outputs:
+  InputS3Bucket:
+    Description: Input S3 bucket
+    Value:
+      Ref: InputS3Bucket
+  OutputS3Bucket:
+    Description: Output S3 bucket
+    Value:
+      Ref: OutputS3Bucket
+Parameters:
+  ConversionTimeout:
+    Default: 60
+    Type: Number
+Resources:
+  ConvertFileFunction:
+    Properties:
+      CodeUri: s3://sar-components-bucket/1a4741b1dd37f9db2268dc7f1a32a678
+      Environment:
+        Variables:
+          EXTENSION: .xlsx
+          MIME_TYPE: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+          RESULTS_BUCKET_NAME:
+            Ref: OutputS3Bucket
+      Events:
+        FileUpload:
+          Properties:
+            Bucket:
+              Ref: InputS3Bucket
+            Events: s3:ObjectCreated:*
+          Type: S3
+      Handler: index.handler
+      MemorySize: 512
+      Policies:
+      - S3CrudPolicy:
+          BucketName:
+            Fn::Sub: ${AWS::StackName}-*
+      Runtime: nodejs8.10
+      Timeout:
+        Ref: ConversionTimeout
+    Type: AWS::Serverless::Function
+  InputS3Bucket:
+    Type: AWS::S3::Bucket
+  OutputS3Bucket:
+    Type: AWS::S3::Bucket
+Transform: AWS::Serverless-2016-10-31
