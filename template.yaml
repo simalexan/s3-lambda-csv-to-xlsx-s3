@@ -5,9 +5,17 @@ Parameters:
   ConversionTimeout:
     Type: Number
     Default: 60
+  InputBucketName:
+    Type: String
+    Default: 'csv-inputs-s3-bucket'
+  OutputBucketName:
+    Type: String
+    Default: 'xlsx-outputs-s3-bucket'
 Resources:
   InputS3Bucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${InputBucketName}-${AWS::StackName}'
   ConvertFileFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -16,8 +24,10 @@ Resources:
       MemorySize: 512
       Runtime: nodejs8.10
       Policies:
+      - S3ReadPolicy:
+          BucketName: !Sub '${InputBucketName}-${AWS::StackName}'
       - S3CrudPolicy:
-          BucketName: !Sub "${AWS::StackName}-*"
+          BucketName: !Sub '${OutputBucketName}-${AWS::StackName}'
       Environment:
         Variables:
           RESULTS_BUCKET_NAME: !Ref OutputS3Bucket
@@ -31,6 +41,8 @@ Resources:
             Events: s3:ObjectCreated:*
   OutputS3Bucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${OutputBucketName}-${AWS::StackName}'
 
 Outputs:
   InputS3Bucket:

@@ -13,10 +13,16 @@ Parameters:
   ConversionTimeout:
     Default: 60
     Type: Number
+  InputBucketName:
+    Default: csv-inputs-s3-bucket
+    Type: String
+  OutputBucketName:
+    Default: xlsx-outputs-s3-bucket
+    Type: String
 Resources:
   ConvertFileFunction:
     Properties:
-      CodeUri: s3://sar-components-bucket/1a4741b1dd37f9db2268dc7f1a32a678
+      CodeUri: s3://sar-components-bucket/6fdbd3d12ccd0da0bfbf9116597bf386
       Environment:
         Variables:
           EXTENSION: .xlsx
@@ -33,15 +39,24 @@ Resources:
       Handler: index.handler
       MemorySize: 512
       Policies:
+      - S3ReadPolicy:
+          BucketName:
+            Fn::Sub: ${InputBucketName}-${AWS::StackName}
       - S3CrudPolicy:
           BucketName:
-            Fn::Sub: ${AWS::StackName}-*
+            Fn::Sub: ${OutputBucketName}-${AWS::StackName}
       Runtime: nodejs8.10
       Timeout:
         Ref: ConversionTimeout
     Type: AWS::Serverless::Function
   InputS3Bucket:
+    Properties:
+      BucketName:
+        Fn::Sub: ${InputBucketName}-${AWS::StackName}
     Type: AWS::S3::Bucket
   OutputS3Bucket:
+    Properties:
+      BucketName:
+        Fn::Sub: ${OutputBucketName}-${AWS::StackName}
     Type: AWS::S3::Bucket
 Transform: AWS::Serverless-2016-10-31
