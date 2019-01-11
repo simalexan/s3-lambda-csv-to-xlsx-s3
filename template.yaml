@@ -7,15 +7,15 @@ Parameters:
     Default: 60
   InputBucketName:
     Type: String
-    Default: 'csv-inputs-s3-bucket'
+    Default: 's3-lambda-csv-input-s3-bucket'
   OutputBucketName:
     Type: String
-    Default: 'xlsx-outputs-s3-bucket'
+    Default: 's3-lambda-xlsx-output-s3-bucket'
 Resources:
   InputS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${InputBucketName}-${AWS::StackName}'
+      BucketName: !Ref InputBucketName
   ConvertFileFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -25,9 +25,9 @@ Resources:
       Runtime: nodejs8.10
       Policies:
       - S3ReadPolicy:
-          BucketName: !Sub '${InputBucketName}-${AWS::StackName}'
+          BucketName: !Ref InputBucketName
       - S3CrudPolicy:
-          BucketName: !Sub '${OutputBucketName}-${AWS::StackName}'
+          BucketName: !Ref OutputBucketName
       Environment:
         Variables:
           RESULTS_BUCKET_NAME: !Ref OutputS3Bucket
@@ -42,7 +42,7 @@ Resources:
   OutputS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${OutputBucketName}-${AWS::StackName}'
+      BucketName: !Ref OutputBucketName
 
 Outputs:
   InputS3Bucket:
