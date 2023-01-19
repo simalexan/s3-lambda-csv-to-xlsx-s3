@@ -22,7 +22,7 @@ Resources:
       Handler: index.handler
       Timeout: !Ref ConversionTimeout
       MemorySize: 512
-      Runtime: nodejs8.10
+      Runtime: nodejs18.x
       Policies:
       - S3ReadPolicy:
           BucketName: !Ref InputBucketName

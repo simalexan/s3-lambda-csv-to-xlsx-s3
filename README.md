@@ -21,9 +21,9 @@ This component has one CloudFormation deployment parameter:
 
 - `OutputBucketName`, an optional parameter, represents the name of the Output CSV Bucket. By default its "s3-lambda-csv-output-s3-bucket".
 
-## Latest Release - 1.1.0
+## Latest Release - 1.1.1
 
-- Added Input and Output bucket names as Cloudformation Parameters
+- Updated the Lambda runtime from `nodejs8.10` to `nodejs18.x`
 
 ## Roadmap - Upcoming changes
 
